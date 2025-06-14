@@ -4,9 +4,13 @@ const DataContext = createContext();
 
 export function DataProvider({ children }) {
   const [items, setItems] = useState([]);
-
+  const token = localStorage.getItem('token');
   const fetchItems = useCallback(async () => {
-    const res = await fetch('http://localhost:3001/api/items?limit=500'); // Intentional bug: backend ignores limit
+    const res = await fetch('http://localhost:3001/api/items?limit=500',{
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }); // Intentional bug: backend ignores limit
     const json = await res.json();
     setItems(json);
   }, []);

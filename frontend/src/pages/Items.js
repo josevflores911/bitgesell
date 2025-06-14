@@ -6,24 +6,31 @@ function Items() {
   const { items, fetchItems } = useData();
 
   useEffect(() => {
-    let active = true;
+  let isMounted = true;
 
-    // Intentional bug: setState called after component unmount if request is slow
-    fetchItems().catch(console.error);
+  const loadItems = async () => {
+    try {
+      const token = localStorage.getItem('token'); // Trae el token actualizado
+      await fetchItems(token);
+    } catch (err) {
+      if (isMounted) console.error(err);
+    }
+  };
 
-    // Clean‑up to avoid memory leak (candidate should implement)
-    return () => {
-      active = false;
-    };
-  }, [fetchItems]);
+  loadItems();
 
-  if (!items.length) return <p>Loading...</p>;
+  return () => {
+    isMounted = false;
+  };
+}, [fetchItems]);
+
+  if (!items || !items.length) return <p>Loading...</p>;
 
   return (
     <ul>
       {items.map(item => (
         <li key={item.id}>
-          <Link to={'/items/' + item.id}>{item.name}</Link>
+          <Link to={`/items/${item.id}`}>{item.name}</Link>
         </li>
       ))}
     </ul>

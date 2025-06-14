@@ -1,26 +1,39 @@
+require('dotenv').config(); // Load before anything else
+
 const express = require('express');
-const path = require('path');
 const morgan = require('morgan');
+const cors = require('cors');
 const itemsRouter = require('./routes/items');
 const statsRouter = require('./routes/stats');
-const cors = require('cors');
-const { getCookie, notFound } = require('./middleware/errorHandler');
+const { generateToken, verifyToken, notFound } = require('./middleware/errorHandler');
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 'UR_PORT';
+
+
 
 app.use(cors({ origin: 'http://localhost:3000' }));
-// Basic middleware
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Routes
-app.use('/api/items', itemsRouter);
-app.use('/api/stats', statsRouter);
+// Public route to generate token
+app.post('/api/token', generateToken);
 
-// Not Found
-app.use('*', notFound);
 
-getCookie();
+  // Example of protecting routes using verifyToken middleware
+  app.use('/api/items', verifyToken, itemsRouter);
+  app.use('/api/stats', verifyToken, statsRouter);
 
-app.listen(port, () => console.log('Backend running on http://localhost:' + port));
+  // Not Found route handler
+  app.use('*', notFound);
+
+  // Error handler middleware (optional, for catching errors)
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+  });
+
+  app.listen(port, () => console.log('Backend running on http://localhost:' + port));
+
+
+
+

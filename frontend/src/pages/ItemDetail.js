@@ -7,16 +7,40 @@ function ItemDetail() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/items/' + id)
-      .then(res => res.ok ? res.json() : Promise.reject(res))
-      .then(setItem)
-      .catch(() => navigate('/'));
+    let isMounted = true;
+
+    const fetchItem = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`/api/items/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) throw new Error('Unauthorized or not found');
+
+        const data = await response.json();
+
+        if (isMounted) setItem(data);
+      } catch (err) {
+        console.error(err);
+        navigate('/');
+      }
+    };
+
+    fetchItem();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id, navigate]);
 
-  if (!item) return <p>Loading...</p>;
+  if (!item) return <p>Loading item...</p>;
 
   return (
-    <div style={{padding: 16}}>
+    <div style={{ padding: 16 }}>
       <h2>{item.name}</h2>
       <p><strong>Category:</strong> {item.category}</p>
       <p><strong>Price:</strong> ${item.price}</p>
