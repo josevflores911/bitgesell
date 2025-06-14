@@ -1,1 +1,11 @@
 git remote add origin https://github.com/josevflores911/bitgesell.git
+
+ git branch --set-upstream-to=origin/<branch> master
+git branch --set-upstream-to=origin/master master
+
+git pull origin master --allow-unrelated-histories
+
+message -> esc -> :wq
+
+
+
