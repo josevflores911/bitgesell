@@ -1,4 +1,6 @@
 SOLUTION.md
+
+
 Backend (Node.js)
 Refactor Blocking I/O
 The original implementation of the /api/items routes used synchronous file I/O (fs.readFileSync), which blocks the event loop and degrades performance under load. This was refactored to use asynchronous non-blocking operations (fs.promises.readFile and fs.promises.writeFile) to improve scalability and responsiveness.
@@ -23,6 +25,6 @@ Virtualized List Rendering
 To handle potentially large lists efficiently, react-window was incorporated. This renders only the visible rows in the viewport, drastically improving rendering performance and reducing memory usage, especially on lower-end devices or with large datasets.
 
 UI/UX Enhancements
-Added skeleton loaders during data fetching to improve perceived responsiveness.
+Added skeleton loaders during data fetching to improve perceived responsiveness..
 
 
