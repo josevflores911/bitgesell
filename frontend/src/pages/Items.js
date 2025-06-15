@@ -12,35 +12,37 @@ function Items() {
 
   const abortControllerRef = useRef(null);
 
+  // Fetch items from the API with optional search query and pagination
   const fetchItems = async () => {
-  if (abortControllerRef.current) abortControllerRef.current.abort();
+    if (abortControllerRef.current) abortControllerRef.current.abort();
 
-  const controller = new AbortController();
-  abortControllerRef.current = controller;
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
-  setLoading(true);
-  try {
-    const token = localStorage.getItem('token'); //  Aseguramos el token actualizado
-    const params = new URLSearchParams({ q, page });
-    const res = await fetch(`/api/items?${params.toString()}`, {
-      signal: controller.signal,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token'); // Ensure the token is updated
+      const params = new URLSearchParams({ q, page });
+      const res = await fetch(`/api/items?${params.toString()}`, {
+        signal: controller.signal,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    const data = await res.json();
-    setItems(data.items);
-    setTotalPages(data.totalPages);
-  } catch (err) {
-    if (err.name !== 'AbortError') console.error(err);
-  } finally {
-    setLoading(false);
-    abortControllerRef.current = null;
-  }
-};
+      const data = await res.json();
+      setItems(data.items);
+      setTotalPages(data.totalPages);
+    } catch (err) {
+      if (err.name !== 'AbortError') console.error(err);
+    } finally {
+      setLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
 
+  // Fetch items when search query or page changes
   useEffect(() => {
     fetchItems();
     return () => {
@@ -48,38 +50,22 @@ function Items() {
     };
   }, [q, page]);
 
+  // Update search query and reset page to 1
   const handleSearchChange = (e) => {
     setQ(e.target.value);
     setPage(1);
   };
 
-  // Skeleton loader para filas
+  // Skeleton loader row for loading state
   const SkeletonRow = ({ style }) => (
-    <div
-      style={{
-        ...style,
-        backgroundColor: '#eee',
-        borderRadius: '4px',
-        margin: '5px 10px',
-        height: '30px',
-        animation: 'pulse 1.5s infinite',
-      }}
-      aria-hidden="true"
-    />
+    <div className="skeleton-row" style={style} aria-hidden="true" />
   );
 
+  // Single row rendering for each item
   const Row = ({ index, style }) => {
     const item = items[index];
     return (
-      <div
-        style={{
-          ...style,
-          padding: '5px 10px',
-          borderBottom: '1px solid #ddd',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
+      <div className="item-row" style={style} key={item.id}>
         <Link to={`/api/items/${item.id}`} tabIndex={0}>
           {item.name}
         </Link>
@@ -88,21 +74,21 @@ function Items() {
   };
 
   return (
-    <section aria-label="Lista de items" className="items-container">
+    <section aria-label="Items list" className="items-container">
       <label htmlFor="search-input" className="items-label">
-        Buscar items:
+        Search items:
       </label>
       <input
         id="search-input"
         type="search"
         value={q}
         onChange={handleSearchChange}
-        placeholder="Buscar items..."
+        placeholder="Search items..."
         className="items-search-input"
         aria-describedby="search-desc"
       />
       <div id="search-desc" style={{ display: 'none' }}>
-        Introduzca texto para buscar items. La lista se actualizará automáticamente.
+        Enter text to search items. The list will update automatically.
       </div>
 
       {loading ? (
@@ -113,7 +99,7 @@ function Items() {
           width="100%"
           className="items-list"
         >
-          {({ style }) => <div className="skeleton-row" style={style} aria-hidden="true" />}
+          {SkeletonRow}
         </List>
       ) : items.length > 0 ? (
         <List
@@ -125,31 +111,25 @@ function Items() {
           role="list"
           aria-live="polite"
         >
-          {({ index, style }) => (
-            <div style={style} className="item-row" key={items[index].id}>
-              <Link to={`/api/items/${items[index].id}`} tabIndex={0}>
-                {items[index].name}
-              </Link>
-            </div>
-          )}
+          {Row}
         </List>
       ) : (
         <p role="alert" className="no-results">
-          No hay resultados.
+          No results found.
         </p>
       )}
 
-      <nav aria-label="Paginación" className="pagination-container">
+      <nav aria-label="Pagination" className="pagination-container">
         <button
           onClick={() => setPage(p => Math.max(p - 1, 1))}
           disabled={page <= 1 || loading}
           aria-disabled={page <= 1 || loading}
           className="pagination-button"
         >
-          Anterior
+          Previous
         </button>
         <span aria-live="polite">
-          Página {page} de {totalPages}
+          Page {page} of {totalPages}
         </span>
         <button
           onClick={() => setPage(p => Math.min(p + 1, totalPages))}
@@ -157,11 +137,9 @@ function Items() {
           aria-disabled={page >= totalPages || loading}
           className="pagination-button"
         >
-          Siguiente
+          Next
         </button>
       </nav>
-
-
     </section>
   );
 }

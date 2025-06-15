@@ -6,17 +6,17 @@ export function DataProvider({ children }) {
   const [items, setItems] = useState([]);
   const token = localStorage.getItem('token');
 
-  // Recibe opcionalmente un signal para abortar la petición
+  // Optionally receives a signal to abort the request
   const fetchItems = useCallback(async (signal) => {
     const res = await fetch('http://localhost:3001/api/items?limit=500', {
       headers: {
         'Authorization': `Bearer ${token}`
       },
-      signal, 
+      signal,
     });
     const json = await res.json();
-    setItems(json);
-  }, [token]); // token en dependencia porque puede cambiar
+    setItems(json.items);
+  }, [token]); // token as dependency because it can change
 
   return (
     <DataContext.Provider value={{ items, fetchItems }}>

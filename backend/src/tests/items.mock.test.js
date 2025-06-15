@@ -1,6 +1,6 @@
 // tests/items.mock.test.js
 
-jest.mock('fs/promises'); // mock fs antes de cargar router
+jest.mock('fs/promises'); // mock fs before loading router
 
 const fs = require('fs/promises');
 const express = require('express');

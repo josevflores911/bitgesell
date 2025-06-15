@@ -17,7 +17,7 @@ describe('Items API with real file', () => {
     let app;
 
     beforeAll(async () => {
-        // Sobrescribir archivo con datos de prueba
+        // Overwrite file with test data
         await fs.writeFile(DATA_PATH, JSON.stringify(mockItems, null, 2));
     });
 

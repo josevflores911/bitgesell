@@ -9,7 +9,7 @@ const DATA_PATH = path.join(__dirname, '../../../data/items.json');
 let cachedStats = null;
 let cacheTimestamp = 0;
 
-// Función para cargar y calcular stats
+// Function to load and calculate stats
 async function loadStats() {
   const raw = await fs.promises.readFile(DATA_PATH, 'utf-8');
   const items = JSON.parse(raw);
@@ -24,10 +24,10 @@ async function loadStats() {
   return stats;
 }
 
-// Inicializar cache al arrancar
+// Initialize cache on startup
 loadStats().catch(console.error);
 
-// Vigilar cambios en el archivo para refrescar cache automáticamente
+// Watch for file changes to refresh cache automatically
 fs.watch(DATA_PATH, (eventType) => {
   if (eventType === 'change') {
     console.log('Items file changed, refreshing stats cache...');
@@ -35,12 +35,12 @@ fs.watch(DATA_PATH, (eventType) => {
   }
 });
 
-// Endpoint que devuelve stats cacheadas
+// Endpoint that returns cached stats
 router.get('/', (req, res, next) => {
   if (cachedStats) {
     return res.json(cachedStats);
   }
-  // Por si acaso cache está vacía (primera llamada)
+  // Just in case cache is empty (first call)
   loadStats()
     .then(stats => res.json(stats))
     .catch(next);

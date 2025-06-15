@@ -5,13 +5,13 @@ const router = express.Router();
 
 const DATA_PATH = path.join(__dirname, '../../../data/items.json');
 
-// Utilidad para leer los datos de forma no bloqueante
+// Utility to read data asynchronously
 async function readData() {
   const raw = await fs.readFile(DATA_PATH, 'utf-8');
   return JSON.parse(raw);
 }
 
-// Utilidad para escribir los datos de forma no bloqueante
+// Utility to write data asynchronously
 async function writeData(data) {
   await fs.writeFile(DATA_PATH, JSON.stringify(data, null, 2));
 }
@@ -22,14 +22,14 @@ router.get('/', async (req, res, next) => {
     const data = await readData();
     const { q = '', page = '1', limit = '10' } = req.query;
 
-    // Filtrado por búsqueda (case insensitive)
+    // Filter by search (case insensitive)
     let filtered = data;
     if (q) {
       const qLower = q.toLowerCase();
       filtered = data.filter(item => item.name.toLowerCase().includes(qLower));
     }
 
-    // Paginación
+    // Pagination
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const startIndex = (pageNum - 1) * limitNum;
@@ -37,7 +37,7 @@ router.get('/', async (req, res, next) => {
 
     const paginatedItems = filtered.slice(startIndex, endIndex);
 
-    // Info adicional (total, página actual, total páginas)
+    // Additional info (total, current page, total pages)
     const totalItems = filtered.length;
     const totalPages = Math.ceil(totalItems / limitNum);
 
@@ -77,7 +77,7 @@ router.post('/', async (req, res, next) => {
     const item = req.body;
     const data = await readData();
 
-    item.id = Date.now(); // Generar ID único
+    item.id = Date.now(); // Generate unique ID
     data.push(item);
 
     await writeData(data);
