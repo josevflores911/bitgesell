@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const cors = require('cors');
 const itemsRouter = require('./routes/items');
 const statsRouter = require('./routes/stats');
+const logger = require('./middleware/logger');
+
 const { generateToken, verifyToken, notFound } = require('./middleware/errorHandler');
 
 const app = express();
@@ -12,10 +14,10 @@ const port = process.env.PORT || 'UR_PORT';
 
 
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: process.env.SITE_ROUTE }));
 app.use(express.json());
 app.use(morgan('dev'));
-
+app.use(logger);
 // Public route to generate token
 app.post('/api/token', generateToken);
 
