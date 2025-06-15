@@ -23,7 +23,7 @@ function Login({ onLogin }) {
   const data = await res.json();
   localStorage.setItem('token', data.token);
 
-  if (onLogin) onLogin(); // update token in App
+   if (onLogin) onLogin(); // update token in App
 
   navigate('/'); // navigate after update
 };

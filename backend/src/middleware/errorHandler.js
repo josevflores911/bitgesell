@@ -21,7 +21,6 @@ const generateToken = (req, res) => {
 const verifyToken = (req, res, next) => {
   
   const authHeader = req.headers['authorization'];
-  console.log('Authorization header2:', authHeader);
   if (!authHeader) return res.status(401).json({ error: 'Authorization header missing' });
 
   const token = authHeader.split(' ')[1]; // Expect 'Bearer TOKEN'

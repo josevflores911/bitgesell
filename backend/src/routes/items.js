@@ -35,14 +35,18 @@ router.get('/', (req, res, next) => {
 
 // GET /api/items/:id
 router.get('/:id', (req, res, next) => {
+
   try {
     const data = readData();
-    const item = data.find(i => i.id === parseInt(req.params.id));
+    const itemId = parseInt(req.params.id);
+    const item = data.find(i => parseInt(i.id) === itemId);
+
     if (!item) {
       const err = new Error('Item not found');
       err.status = 404;
       throw err;
     }
+
     res.json(item);
   } catch (err) {
     next(err);
