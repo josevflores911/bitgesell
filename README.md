@@ -1,31 +1,3 @@
-### Login
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/202f5cdf-fdd2-4770-974b-4c5495962b5b" alt="Login Screen" width="400" />
-</p>
-
-- The user and password can be anything, just fill the space.
-
-### Items
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/4472d629-1471-43a2-bb7f-a9ed5be1ebd5" alt="Items Screen" width="500" />
-</p>
-
-### Stats
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/8835803e-c3c4-46fa-80b8-d27ea03fcdbd" alt="Stats Screen" width="500" />
-</p>
-
-### Skeleton
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/b027fd36-a1d9-4a71-ac33-f6c946581036" alt="Skeleton Screen" width="500" />
-</p>
-
-
-
 
 # Take‑Home Assessment
 
@@ -85,3 +57,33 @@ npm start
 ```
 
 > The frontend proxies `/api` requests to `http://localhost:3001`.
+
+
+### Login
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/202f5cdf-fdd2-4770-974b-4c5495962b5b" alt="Login Screen" width="400" />
+</p>
+
+- The user and password can be anything, just fill the space.
+
+### Items
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4472d629-1471-43a2-bb7f-a9ed5be1ebd5" alt="Items Screen" width="500" />
+</p>
+
+### Stats
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8835803e-c3c4-46fa-80b8-d27ea03fcdbd" alt="Stats Screen" width="500" />
+</p>
+
+### Skeleton
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b027fd36-a1d9-4a71-ac33-f6c946581036" alt="Skeleton Screen" width="500" />
+</p>
+
+
+
