@@ -1,43 +1,61 @@
 const express = require('express');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const router = express.Router();
 
 const DATA_PATH = path.join(__dirname, '../../../data/items.json');
 
-// Utility to read data (intentionally sync to highlight blocking issue)
-function readData() {
-  const raw = fs.readFileSync(DATA_PATH);
+// Utilidad para leer los datos de forma no bloqueante
+async function readData() {
+  const raw = await fs.readFile(DATA_PATH, 'utf-8');
   return JSON.parse(raw);
 }
 
+// Utilidad para escribir los datos de forma no bloqueante
+async function writeData(data) {
+  await fs.writeFile(DATA_PATH, JSON.stringify(data, null, 2));
+}
+
 // GET /api/items
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
-    const data = readData();
-    const { limit, q } = req.query;
-    let results = data;
+    const data = await readData();
+    const { q = '', page = '1', limit = '10' } = req.query;
 
+    // Filtrado por búsqueda (case insensitive)
+    let filtered = data;
     if (q) {
-      // Simple substring search (sub‑optimal)
-      results = results.filter(item => item.name.toLowerCase().includes(q.toLowerCase()));
+      const qLower = q.toLowerCase();
+      filtered = data.filter(item => item.name.toLowerCase().includes(qLower));
     }
 
-    if (limit) {
-      results = results.slice(0, parseInt(limit));
-    }
+    // Paginación
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const startIndex = (pageNum - 1) * limitNum;
+    const endIndex = startIndex + limitNum;
 
-    res.json(results);
+    const paginatedItems = filtered.slice(startIndex, endIndex);
+
+    // Info adicional (total, página actual, total páginas)
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / limitNum);
+
+    res.json({
+      items: paginatedItems,
+      totalItems,
+      totalPages,
+      currentPage: pageNum,
+    });
   } catch (err) {
     next(err);
   }
 });
 
 // GET /api/items/:id
-router.get('/:id', (req, res, next) => {
-
+router.get('/:id', async (req, res, next) => {
   try {
-    const data = readData();
+    const data = await readData();
     const itemId = parseInt(req.params.id);
     const item = data.find(i => parseInt(i.id) === itemId);
 
@@ -54,14 +72,16 @@ router.get('/:id', (req, res, next) => {
 });
 
 // POST /api/items
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
-    // TODO: Validate payload (intentional omission)
     const item = req.body;
-    const data = readData();
-    item.id = Date.now();
+    const data = await readData();
+
+    item.id = Date.now(); // Generar ID único
     data.push(item);
-    fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
+
+    await writeData(data);
+
     res.status(201).json(item);
   } catch (err) {
     next(err);
